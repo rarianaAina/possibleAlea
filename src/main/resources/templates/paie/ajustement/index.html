@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajustements Salariaux - Intégration ERPNext</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-6 flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800">Ajustements Salariaux</h1>
+        <p class="text-gray-600 mt-1">Ajustez les salaires selon des critères spécifiques</p>
+      </div>
+      <a href="/paie/ajustements/historique"
+         class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+        Voir l'Historique
+      </a>
+    </div>
+
+    <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+      <span th:text="${error}"></span>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <form action="/paie/ajustements/traiter" method="post" class="space-y-6">
+        <div>
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Critères de Filtrage</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div>
+              <label for="salaryComponent" class="block text-sm font-medium text-gray-700">Composant Salarial *</label>
+              <select id="salaryComponent" name="salaryComponent" required
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">Sélectionnez un composant</option>
+                <option th:each="composant : ${composants}"
+                        th:value="${composant.name}"
+                        th:text="${composant.salaryComponent}"></option>
+              </select>
+            </div>
+
+            <div>
+              <label for="comparisonOperator" class="block text-sm font-medium text-gray-700">Condition *</label>
+              <select id="comparisonOperator" name="comparisonOperator" required
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">Sélectionnez une condition</option>
+                <option value="lt">Inférieur à</option>
+                <option value="lte">Inférieur ou égal à</option>
+                <option value="eq">Égal à</option>
+                <option value="gte">Supérieur ou égal à</option>
+                <option value="gt">Supérieur à</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="comparisonAmount" class="block text-sm font-medium text-gray-700">Montant *</label>
+              <input type="number" id="comparisonAmount" name="comparisonAmount" required step="0.01" min="0"
+                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Ajustement à Appliquer</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label for="adjustmentType" class="block text-sm font-medium text-gray-700">Type d'Ajustement *</label>
+              <select id="adjustmentType" name="adjustmentType" required
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">Sélectionnez le type</option>
+                <option value="plus">Augmentation (+)</option>
+                <option value="minus">Diminution (-)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="adjustmentPercentage" class="block text-sm font-medium text-gray-700">Pourcentage *</label>
+              <div class="mt-1 relative rounded-md shadow-sm">
+                <input type="number" id="adjustmentPercentage" name="adjustmentPercentage" required
+                       step="0.01" min="0" max="100"
+                       class="block w-full pr-12 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500 sm:text-sm">%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Période Concernée</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label for="startDate" class="block text-sm font-medium text-gray-700">Date de Début *</label>
+              <input type="date" id="startDate" name="startDate" required
+                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+
+            <div>
+              <label for="endDate" class="block text-sm font-medium text-gray-700">Date de Fin *</label>
+              <input type="date" id="endDate" name="endDate" required
+                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-yellow-700">
+                <strong>Attention :</strong> Cette opération va :
+              </p>
+              <ul class="list-disc pl-4 mt-1 text-sm text-yellow-700">
+                <li>Annuler tous les bulletins de paie correspondant aux critères</li>
+                <li>Modifier le salaire de base des employés concernés</li>
+                <li>Créer de nouveaux bulletins de paie avec les nouveaux montants</li>
+                <li>Cette action est irréversible</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <a href="/paie/bulletins"
+             class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Annuler
+          </a>
+          <button type="submit"
+                  onclick="return confirm('Êtes-vous sûr de vouloir appliquer cet ajustement salarial ? Cette action est irréversible.')"
+                  class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+            Appliquer l'Ajustement
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+<script th:replace="fragments/header :: header-script"></script>
+</body>
+</html>

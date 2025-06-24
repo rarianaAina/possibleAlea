@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Assignation Structure Salariale</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+  <style>
+    .navbar-brand i {
+      font-size: 1.5rem;
+      color: #0d6efd;
+      margin-right: 0.5rem;
+    }
+    .search-bar {
+      background-color: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .table-container {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      padding: 1rem;
+    }
+    .table th {
+      background-color: #f8f9fa;
+      color: #495057;
+    }
+    .btn-primary {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+    }
+    .btn-outline-primary {
+      color: #0d6efd;
+      border-color: #0d6efd;
+    }
+    .avatar-placeholder {
+      width: 40px;
+      height: 40px;
+      background-color: #e9ecef;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6c757d;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-5">
+  <h2>Assigner une structure</h2>
+
+  <form id="assignmentForm">
+    <div class="mb-3">
+      <label for="employees" class="form-label">Sélectionner des employés</label>
+      <select id="employees" class="form-select select2-multiple" multiple="multiple" required>
+        <option th:each="employe : ${employes}"
+                th:value="${employe.name}"
+                th:text="${employe.first_name + ' ' + employe.name}">
+        </option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="fromDate" class="form-label">Date de début</label>
+      <input type="date" class="form-control" id="fromDate" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="baseSalary" class="form-label">Salaire de base</label>
+      <input type="number" step="0.01" class="form-control" id="baseSalary">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Assigner</button>
+  </form>
+
+  <div id="result" class="mt-3"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!--<script>
+  $(document).ready(function() {
+    // Initialiser Select2 avec recherche
+    $('.select2-multiple').select2({
+      placeholder: "Sélectionner des employés",
+      allowClear: true
+    });
+
+    $('#assignmentForm').on('submit', function(e) {
+      e.preventDefault();
+
+      // Récupérer les IDs des employés sélectionnés
+      const employeeIds = $('#employees').val();
+      const fromDate = $('#fromDate').val();
+      const baseSalary = $('#baseSalary').val();
+
+      if (!employeeIds || employeeIds.length === 0) {
+        $('#result').html('<div class="alert alert-danger">Veuillez sélectionner au moins un employé</div>');
+        return;
+      }
+
+      $.ajax({
+        url: '/assignement/assign',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          employeeIds: employeeIds,
+          fromDate: fromDate,
+          baseSalary: parseFloat(baseSalary)
+        }),
+        success: function(response) {
+          if (response.status === 'success') {
+            let html = '<div class="alert alert-success">Assignation réussie</div><ul>';
+            for (const [employeeId, message] of Object.entries(response.results)) {
+              // Trouver le nom de l'employé pour l'affichage
+              const employeeName = $(`#employees option[value="${employeeId}"]`).text();
+              html += `<li>${employeeName}: ${message}</li>`;
+            }
+            html += '</ul>';
+            $('#result').html(html);
+          } else {
+            $('#result').html(`<div class="alert alert-danger">Erreur: ${response.message}</div>`);
+          }
+        },
+        error: function(xhr) {
+          $('#result').html(`<div class="alert alert-danger">Erreur serveur: ${xhr.responseText}</div>`);
+        }
+      });
+    });
+  });
+</script>-->
+
+
+<script>
+  $(document).ready(function() {
+    $('.select2-multiple').select2({
+      placeholder: "Sélectionner des employés",
+      allowClear: true
+    });
+
+    $('#assignmentForm').on('submit', function(e) {
+      e.preventDefault();
+
+      const employeeIds = $('#employees').val();
+      const fromDate = $('#fromDate').val();
+      const baseSalaryInput = $('#baseSalary').val();
+
+      if (!employeeIds || employeeIds.length === 0) {
+        $('#result').html('<div class="alert alert-danger">Veuillez sélectionner au moins un employé</div>');
+        return;
+      }
+
+      const payload = {
+        employeeIds: employeeIds,
+        fromDate: fromDate,
+        baseSalary: baseSalaryInput ? parseFloat(baseSalaryInput) : null
+      };
+
+      $.ajax({
+        url: '/assignement/assign',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: function(response) {
+          if (response.status === 'success') {
+            let html = '<div class="alert alert-success">Assignation réussie</div><ul>';
+            for (const [employeeId, message] of Object.entries(response.results)) {
+              const employeeName = $(`#employees option[value="${employeeId}"]`).text();
+              html += `<li>${employeeName}: ${message}</li>`;
+            }
+            html += '</ul>';
+            $('#result').html(html);
+          } else {
+            $('#result').html(`<div class="alert alert-danger">Erreur: ${response.message}</div>`);
+          }
+        },
+        error: function(xhr) {
+          $('#result').html(`<div class="alert alert-danger">Erreur serveur: ${xhr.responseText}</div>`);
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>

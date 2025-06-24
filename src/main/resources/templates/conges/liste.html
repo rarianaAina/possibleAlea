@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des congés - Gestion RH</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    .navbar-brand i {
+      font-size: 1.5rem;
+      color: #0d6efd;
+      margin-right: 0.5rem;
+    }
+    .table-container {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      padding: 1rem;
+    }
+    .table th {
+      background-color: #f8f9fa;
+      color: #495057;
+    }
+  </style>
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <i class="bi bi-building"></i>
+      <span>Gestion RH</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/employes">Employés</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/salaires">Salaires</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/structures-salariales">Structures</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/conges">Congés</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/statistiques">Statistiques</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/logout">Déconnexion</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Gestion des congés</h2>
+    <div>
+      <a href="/conges/nouveau" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Nouvelle demande
+      </a>
+    </div>
+  </div>
+
+  <div th:if="${success}" class="alert alert-success" role="alert">
+    <i class="bi bi-check-circle me-2"></i>
+    <span th:text="${success}"></span>
+  </div>
+
+  <div th:if="${error}" class="alert alert-danger" role="alert">
+    <i class="bi bi-exclamation-circle me-2"></i>
+    <span th:text="${error}"></span>
+  </div>
+
+  <div class="table-container">
+    <table class="table table-hover" th:if="${not #lists.isEmpty(conges)}">
+      <thead>
+      <tr>
+        <th>Employé</th>
+        <th>Type de congé</th>
+        <th>Période</th>
+        <th>Nombre de jours</th>
+        <th>Statut</th>
+        <th>Date de demande</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="conge : ${conges}">
+        <td th:text="${conge.nomEmploye}"></td>
+        <td>
+          <span class="badge bg-info" th:text="${conge.typeConge}"></span>
+        </td>
+        <td>
+          <span th:text="${#temporals.format(conge.dateDebut, 'dd/MM/yyyy')}"></span>
+          <span> - </span>
+          <span th:text="${#temporals.format(conge.dateFin, 'dd/MM/yyyy')}"></span>
+        </td>
+        <td th:text="${conge.nombreJours} + ' jour(s)'"></td>
+        <td>
+                            <span th:class="${conge.statut == 'Approved' ? 'badge bg-success' :
+                                           (conge.statut == 'Rejected' ? 'badge bg-danger' : 'badge bg-warning')}"
+                                  th:text="${conge.statut == 'Approved' ? 'Approuvé' :
+                                           (conge.statut == 'Rejected' ? 'Rejeté' : 'En attente')}">
+                            </span>
+        </td>
+        <td th:text="${#temporals.format(conge.dateCreation, 'dd/MM/yyyy')}"></td>
+        <td>
+          <div class="btn-group" role="group" th:if="${conge.statut == 'Open'}">
+            <form th:action="@{/conges/{id}/approuver(id=${conge.id})}" method="post" style="display: inline;">
+              <button type="submit" class="btn btn-sm btn-success"
+                      onclick="return confirm('Approuver cette demande de congé ?')">
+                <i class="bi bi-check-circle"></i>
+              </button>
+            </form>
+            <form th:action="@{/conges/{id}/rejeter(id=${conge.id})}" method="post" style="display: inline;">
+              <button type="submit" class="btn btn-sm btn-danger"
+                      onclick="return confirm('Rejeter cette demande de congé ?')">
+                <i class="bi bi-x-circle"></i>
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class="alert alert-info" th:if="${#lists.isEmpty(conges)}">
+      <i class="bi bi-info-circle me-2"></i>
+      Aucune demande de congé trouvée.
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

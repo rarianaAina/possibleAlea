@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Générer des Bulletins - Intégration ERPNext</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-3xl mx-auto">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">Générer des Bulletins de Paie</h1>
+      <p class="text-gray-600 mt-1">Sélectionnez les employés et la période pour générer les bulletins</p>
+    </div>
+
+    <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+      <span th:text="${error}"></span>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <form action="/paie/bulletins/generer" method="post" class="space-y-6">
+        <div>
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Période de Paie</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="startDate" class="block text-sm font-medium text-gray-700">Date de Début *</label>
+              <input type="date" id="startDate" name="startDate" required
+                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+
+            <div>
+              <label for="endDate" class="block text-sm font-medium text-gray-700">Date de Fin *</label>
+              <input type="date" id="endDate" name="endDate" required
+                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Structure Salariale</h2>
+          <div>
+            <label for="salaryStructure" class="block text-sm font-medium text-gray-700">Structure *</label>
+            <select id="salaryStructure" name="salaryStructure" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+              <option value="">Sélectionnez une structure</option>
+              <option th:each="structure : ${structures}"
+                      th:value="${structure.name}"
+                      th:text="${structure.name}"></option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Employés</h2>
+          <div class="space-y-4">
+            <div class="flex items-center mb-2">
+              <input type="checkbox" id="selectAll" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+              <label for="selectAll" class="ml-2 text-sm font-medium text-gray-700">Sélectionner tous les employés</label>
+            </div>
+
+            <div class="max-h-60 overflow-y-auto border border-gray-200 rounded-md p-4">
+              <div th:each="employe : ${employes}" class="flex items-center mb-2">
+                <input type="checkbox" th:id="${'employe-' + employe.name}"
+                       th:name="selectedEmployes" th:value="${employe.name}"
+                       class="employe-checkbox rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                <label th:for="${'employe-' + employe.name}" class="ml-2 text-sm text-gray-700"
+                       th:text="${employe.employeeName + ' (' + employe.employeeNumber + ')'}"></label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <a href="/paie/bulletins"
+             class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Annuler
+          </a>
+          <button type="submit"
+                  class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Générer les Bulletins
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+<script th:replace="fragments/header :: header-script"></script>
+
+<script>
+  document.getElementById('selectAll').addEventListener('change', function() {
+    const checkboxes = document.getElementsByClassName('employe-checkbox');
+    for (let checkbox of checkboxes) {
+      checkbox.checked = this.checked;
+    }
+  });
+
+  const employeCheckboxes = document.getElementsByClassName('employe-checkbox');
+  for (let checkbox of employeCheckboxes) {
+    checkbox.addEventListener('change', function() {
+      const allChecked = Array.from(employeCheckboxes).every(cb => cb.checked);
+      document.getElementById('selectAll').checked = allChecked;
+    });
+  }
+</script>
+</body>
+</html>

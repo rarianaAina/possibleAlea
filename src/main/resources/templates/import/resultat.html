@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultat d'Importation - Intégration ERPNext</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div th:replace="fragments/header :: header"></div>
+    
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Résultat de l'Importation</h1>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div th:if="${success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                <div class="flex items-center">
+                    <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    <span th:text="${success}"></span>
+                </div>
+            </div>
+            
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Résumé de l'Importation</h2>
+            
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-800 mb-2">Les actions suivantes ont été effectuées :</h3>
+                <ul class="list-disc pl-6 text-gray-600 space-y-2">
+                    <li>Création et mise à jour des fournisseurs</li>
+                    <li>Création et mise à jour des articles</li>
+                    <li>Création des demandes de matériel (Material Requests)</li>
+                    <li>Création des demandes de devis (Request for Quotations)</li>
+                    <li>Création des devis fournisseurs (Supplier Quotations) en statut brouillon</li>
+                </ul>
+            </div>
+            
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-blue-700">
+                            <strong>Information :</strong> Vous pouvez maintenant accéder à ERPNext pour voir les éléments créés et finaliser les devis fournisseurs.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-between">
+                <a href="/import" 
+                   class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Nouvelle Importation
+                </a>
+                <a href="/dashboard" 
+                   class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Retour au Tableau de Bord
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div th:replace="fragments/footer :: footer"></div>
+    <script th:replace="fragments/header :: header-script"></script>
+</body>
+</html>

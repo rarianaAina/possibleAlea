@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<header th:fragment="header" class="bg-indigo-600 text-white">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+            <div class="flex items-center">
+                <a href="/dashboard" class="text-xl font-bold">ERPNext Integration</a>
+            </div>
+
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li>
+                        <a href="/dashboard" class="hover:text-indigo-200 transition-colors">Tableau de bord</a>
+                    </li>
+                    <li class="relative group">
+                        <a href="#" class="hover:text-indigo-200 transition-colors flex items-center">
+                            Ventes
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </a>
+                        <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                            <a href="/ventes/clients" class="block px-4 py-2 text-gray-800 hover:bg-indigo-100">Clients</a>
+                            <a href="/ventes/commandes" class="block px-4 py-2 text-gray-800 hover:bg-indigo-100">Commandes</a>
+                        </div>
+                    </li>
+                    <li class="relative group">
+                        <a href="#" class="hover:text-indigo-200 transition-colors flex items-center">
+                            Projets
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </a>
+                        <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                            <a href="/projets" class="block px-4 py-2 text-gray-800 hover:bg-indigo-100">Liste des projets</a>
+                            <a href="/projets/ajouter" class="block px-4 py-2 text-gray-800 hover:bg-indigo-100">Nouveau projet</a>
+                        </div>
+                    </li>
+                    <li class="relative group">
+                        <a href="#" class="hover:text-indigo-200 transition-colors flex items-center">
+                            Paie
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </a>
+                        <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                            <a href="/paie/structures" class="block px-4 py-2 text-gray-800 hover:bg-indigo-100">Structures Salariales</a>
+                            <a href="/paie/bulletins" class="block px-4 py-2 text-gray-800 hover:bg-indigo-100">Bulletins de Paie</a>
+                            <a href="/paie/ajustements" class="block px-4 py-2 text-gray-800 hover:bg-indigo-100">Ajustements Salariaux</a>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="/import" class="hover:text-indigo-200 transition-colors">Importation</a>
+                    </li>
+                    <li>
+                        <a href="/employes" class="hover:text-indigo-200 transition-colors">Module RH</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="flex items-center">
+                <a href="/logout" class="hover:text-indigo-200 transition-colors flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Déconnexion
+                </a>
+            </div>
+
+            <!-- Menu mobile -->
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-white focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menu mobile déroulant -->
+        <div id="mobile-menu" class="md:hidden hidden pb-4">
+            <a href="/dashboard" class="block py-2 hover:text-indigo-200">Tableau de bord</a>
+
+            <div class="py-2">
+                <button id="mobile-ventes-button" class="flex justify-between items-center w-full hover:text-indigo-200">
+                    <span>Ventes</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="mobile-ventes-menu" class="hidden pl-4 mt-2">
+                    <a href="/ventes/clients" class="block py-2 hover:text-indigo-200">Clients</a>
+                    <a href="/ventes/commandes" class="block py-2 hover:text-indigo-200">Commandes</a>
+                </div>
+            </div>
+
+            <div class="py-2">
+                <button id="mobile-projets-button" class="flex justify-between items-center w-full hover:text-indigo-200">
+                    <span>Projets</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="mobile-projets-menu" class="hidden pl-4 mt-2">
+                    <a href="/projets" class="block py-2 hover:text-indigo-200">Liste des projets</a>
+                    <a href="/projets/ajouter" class="block py-2 hover:text-indigo-200">Nouveau projet</a>
+                </div>
+            </div>
+
+            <div class="py-2">
+                <button id="mobile-rh-button" class="flex justify-between items-center w-full hover:text-indigo-200">
+                    <span>RH</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="mobile-rh-menu" class="hidden pl-4 mt-2">
+                    <a href="/rh/employes" class="block py-2 hover:text-indigo-200">Employés</a>
+                </div>
+            </div>
+
+            <div class="py-2">
+                <button id="mobile-paie-button" class="flex justify-between items-center w-full hover:text-indigo-200">
+                    <span>Paie</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="mobile-paie-menu" class="hidden pl-4 mt-2">
+                    <a href="/paie/structures" class="block py-2 hover:text-indigo-200">Structures Salariales</a>
+                    <a href="/paie/bulletins" class="block py-2 hover:text-indigo-200">Bulletins de Paie</a>
+                    <a href="/paie/ajustements" class="block py-2 hover:text-indigo-200">Ajustements Salariaux</a>
+                </div>
+            </div>
+
+            <a href="/import" class="block py-2 hover:text-indigo-200">Importation</a>
+            <a href="/logout" class="block py-2 hover:text-indigo-200">Déconnexion</a>
+        </div>
+    </div>
+</header>
+
+<script th:fragment="header-script">
+    // Script pour le menu mobile
+    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+
+    document.getElementById('mobile-ventes-button').addEventListener('click', function() {
+        document.getElementById('mobile-ventes-menu').classList.toggle('hidden');
+    });
+
+    document.getElementById('mobile-projets-button').addEventListener('click', function() {
+        document.getElementById('mobile-projets-menu').classList.toggle('hidden');
+    });
+
+    document.getElementById('mobile-rh-button').addEventListener('click', function() {
+        document.getElementById('mobile-rh-menu').classList.toggle('hidden');
+    });
+
+    document.getElementById('mobile-paie-button').addEventListener('click', function() {
+        document.getElementById('mobile-paie-menu').classList.toggle('hidden');
+    });
+</script>
+</body>
+</html>

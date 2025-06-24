@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gestion des Employés & Demandes de Congé</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6 text-gray-800">Gestion des Employés et Demandes de Congé</h1>
+
+  <!-- Liste des employés -->
+  <div class="mb-10 bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="p-6">
+      <h2 class="text-xl font-semibold mb-4">Liste des Employés</h2>
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Poste</th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+        <tr th:each="employe : ${employes}">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${employe.name}">Nom Employé</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${employe.name}">Name</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${employe.first_name}">First Name</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<!--
+  &lt;!&ndash; Liste des demandes de congé &ndash;&gt;
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="p-6">
+      <h2 class="text-xl font-semibold mb-4">Demandes de Congé</h2>
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employé</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type de Congé</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Début</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Fin</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+        <tr th:each="leaveRequest : ${leaveRequests}">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${leaveRequest.employeeName}">Nom Employé</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${leaveRequest.leaveType}">Type de congé</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${#dates.format(leaveRequest.fromDate, 'dd/MM/yyyy')}">01/01/2025</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${#dates.format(leaveRequest.toDate, 'dd/MM/yyyy')}">07/01/2025</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+                <span
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                        th:classappend="${leaveRequest.status == 'Approved' ? 'bg-green-100 text-green-800' :
+                                 leaveRequest.status == 'Rejected' ? 'bg-red-100 text-red-800' :
+                                 leaveRequest.status == 'Open' ? 'bg-yellow-100 text-yellow-800' :
+                                 'bg-gray-100 text-gray-800'}"
+                        th:text="${leaveRequest.status}">
+                  Statut
+                </span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>-->
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+<script th:replace="fragments/header :: header-script"></script>
+</body>
+</html>

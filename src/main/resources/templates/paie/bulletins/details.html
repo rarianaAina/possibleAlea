@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Détails Bulletin - Intégration ERPNext</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-6 flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800">Bulletin de Paie</h1>
+        <p class="text-gray-600 mt-1" th:text="${bulletin.employeeName}"></p>
+      </div>
+      <div class="flex space-x-3">
+        <button th:if="${bulletin.status == 'Draft'}"
+                onclick="soumettreBulletin()"
+                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+          Soumettre
+        </button>
+        <button onclick="imprimerBulletin()"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Imprimer
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div>
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Informations Générales</h2>
+            <dl class="space-y-3">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Période</dt>
+                <dd class="mt-1 text-sm text-gray-900"
+                    th:text="${bulletin.startDate + ' au ' + bulletin.endDate}"></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Structure Salariale</dt>
+                <dd class="mt-1 text-sm text-gray-900" th:text="${bulletin.salaryStructure}"></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Statut</dt>
+                <dd class="mt-1">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                              th:classappend="${bulletin.status == 'Paid' ? 'bg-green-100 text-green-800' :
+                                                             bulletin.status == 'Submitted' ? 'bg-blue-100 text-blue-800' :
+                                                             'bg-gray-100 text-gray-800'}"
+                                              th:text="${bulletin.status}"></span>
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Présence</h2>
+            <dl class="space-y-3">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Jours Travaillés</dt>
+                <dd class="mt-1 text-sm text-gray-900" th:text="${bulletin.totalWorkingDays}"></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Jours de Congés</dt>
+                <dd class="mt-1 text-sm text-gray-900" th:text="${bulletin.leavesTaken}"></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Jours de Présence</dt>
+                <dd class="mt-1 text-sm text-gray-900" th:text="${bulletin.totalPresentDays}"></dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Gains -->
+          <div>
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Gains</h2>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <table class="min-w-full">
+                <thead>
+                <tr>
+                  <th class="text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                  <th class="text-right text-xs font-medium text-gray-500 uppercase">Montant</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                <tr th:each="gain : ${bulletin.earnings}">
+                  <td class="py-2 text-sm text-gray-900" th:text="${gain.salaryComponent}"></td>
+                  <td class="py-2 text-sm text-gray-900 text-right" th:text="${gain.amount}"></td>
+                </tr>
+                <tr class="font-semibold">
+                  <td class="py-2 text-sm text-gray-900">Total Gains</td>
+                  <td class="py-2 text-sm text-gray-900 text-right" th:text="${bulletin.grossPay}"></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Retenues -->
+          <div>
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Retenues</h2>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <table class="min-w-full">
+                <thead>
+                <tr>
+                  <th class="text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                  <th class="text-right text-xs font-medium text-gray-500 uppercase">Montant</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                <tr th:each="retenue : ${bulletin.deductions}">
+                  <td class="py-2 text-sm text-gray-900" th:text="${retenue.salaryComponent}"></td>
+                  <td class="py-2 text-sm text-gray-900 text-right" th:text="${retenue.amount}"></td>
+                </tr>
+                <tr class="font-semibold">
+                  <td class="py-2 text-sm text-gray-900">Total Retenues</td>
+                  <td class="py-2 text-sm text-gray-900 text-right" th:text="${bulletin.totalDeduction}"></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 border-t border-gray-200 pt-8">
+          <div class="flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-800">Net à Payer</h2>
+            <p class="text-2xl font-bold text-gray-900" th:text="${bulletin.netPay}"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+<script th:replace="fragments/header :: header-script"></script>
+
+<script th:inline="javascript">
+  function soumettreBulletin() {
+    if (confirm('Êtes-vous sûr de vouloir soumettre ce bulletin de paie ?')) {
+      const bulletinId = [[${bulletin.name}]];
+      fetch(`/paie/bulletins/${bulletinId}/soumettre`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+              .then(response => {
+                if (response.ok) {
+                  window.location.reload();
+                } else {
+                  alert('Une erreur est survenue lors de la soumission du bulletin.');
+                }
+              })
+              .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors de la soumission du bulletin.');
+              });
+    }
+  }
+
+  function imprimerBulletin() {
+    window.print();
+  }
+</script>
+</body>
+</html>

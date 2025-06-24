@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liste des employés - Gestion RH</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    .navbar-brand i {
+      font-size: 1.5rem;
+      color: #0d6efd;
+      margin-right: 0.5rem;
+    }
+    .search-bar {
+      background-color: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .table-container {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      padding: 1rem;
+    }
+    .table th {
+      background-color: #f8f9fa;
+      color: #495057;
+    }
+    .btn-primary {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+    }
+    .btn-outline-primary {
+      color: #0d6efd;
+      border-color: #0d6efd;
+    }
+    .avatar-placeholder {
+      width: 40px;
+      height: 40px;
+      background-color: #e9ecef;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6c757d;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <i class="bi bi-building"></i>
+      <span>Gestion RH</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/employes">Employés</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/salaires">Salaires</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/structures-salariales">Structures</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/conges">Congés</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/statistiques">Statistiques</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/imports">Importation</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/dashboard">Dashboard</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/logout">Déconnexion</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Liste des employés</h2>
+    <span class="badge bg-primary rounded-pill" th:text="${#lists.size(employes)} + ' employé(s)'"></span>
+  </div>
+
+  <div class="search-bar">
+    <form th:action="@{/employes}" method="get" th:object="${filtre}">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label for="name" class="form-label">Nom</label>
+          <input type="text" class="form-control" id="name" th:field="*{nom}">
+        </div>
+        <div class="col-md-3">
+          <label for="departement" class="form-label">Département</label>
+          <select class="form-select" id="departement" th:field="*{departement}">
+            <option value="">Tous les départements</option>
+            <option th:each="dept : ${departements}" th:value="${dept}" th:text="${dept}"></option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label for="designation" class="form-label">Poste</label>
+          <input type="text" class="form-control" id="designation" th:field="*{designation}">
+        </div>
+        <div class="col-md-3">
+          <label for="statut" class="form-label">Statut</label>
+          <select class="form-select" id="statut" th:field="*{statut}">
+            <option value="">Tous les statuts</option>
+            <option value="Active">Actif</option>
+            <option value="Inactive">Inactif</option>
+            <option value="Left">Parti</option>
+          </select>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end mt-3">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-search me-1"></i> Rechercher
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="table-container">
+    <table class="table table-hover">
+      <thead>
+      <tr>
+        <th scope="col" style="width: 50px;"></th>
+        <th scope="col">Nom</th>
+        <th scope="col">Email</th>
+        <th scope="col">Date d'embauche</th>
+        <th scope="col">Poste</th>
+        <th scope="col">Détails</th>
+        <th scope="col" style="width: 100px;"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="employe : ${employes}" th:if="${not #lists.isEmpty(employes)}">
+        <td>
+          <div class="avatar-placeholder" th:text="${#strings.substring(employe.name, 0, 1) + #strings.substring(employe.name, 0, 1)}"></div>
+        </td>
+        <td>
+          <div th:text="${employe.first_name + ' ' + employe.name}"></div>
+          <small class="text-muted" th:text="${employe.phone}"></small>
+        </td>
+        <td th:text="${employe.email}"></td>
+        <td th:text="${employe.date_of_joining}"></td>
+        <td th:text="${employe.designation}"></td>
+        <td>
+          <a th:href="@{'/employes/' + ${employe.name}}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-eye"></i> Détails
+          </a>
+        </td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(employes)}">
+        <td colspan="7" class="text-center py-4">
+          <i class="bi bi-exclamation-circle fs-4 d-block mb-2 text-muted"></i>
+          <p class="text-muted">Aucun employé trouvé</p>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

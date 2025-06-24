@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajouter composante - Gestion RH</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    .navbar-brand i {
+      font-size: 1.5rem;
+      color: #0d6efd;
+      margin-right: 0.5rem;
+    }
+    .form-container {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      padding: 2rem;
+    }
+  </style>
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <i class="bi bi-building"></i>
+      <span>Gestion RH</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/employes">Employés</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/salaires">Salaires</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/structures-salariales">Structures</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/conges">Congés</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/statistiques">Statistiques</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/imports">Importation</a>
+        </li>
+
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/logout">Déconnexion</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <div class="d-flex align-items-center mb-4">
+    <a th:href="@{/structures-salariales/{id}(id=${structure.name})}" class="btn btn-outline-primary me-2">
+      <i class="bi bi-arrow-left"></i> Retour
+    </a>
+    <h2 class="mb-0">Ajouter une composante salariale</h2>
+  </div>
+
+  <div class="form-container">
+    <form th:action="@{/structures-salariales/{id}/ajouter-composante(id=${structure.name})}"
+          method="post" th:object="${composante}">
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="name" class="form-label">Nom de la composante</label>
+            <input type="text" class="form-control" id="name" th:field="*{name}" required>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="description" class="form-label">Abréviation</label>
+            <input type="text" class="form-control" id="description" th:field="*{description}" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="type" class="form-label">Type</label>
+            <select class="form-select" id="type" th:field="*{type}" required>
+              <option value="">Sélectionner un type</option>
+              <option value="GAIN">Rémunération</option>
+              <option value="DEDUCTION">Déduction</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="montant" class="form-label">Montant (€)</label>
+            <input type="number" class="form-control" id="montant" th:field="*{montant}"
+                   step="0.01" placeholder="0.00" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <a th:href="@{/structures-salariales/{id}(id=${structure.name})}" class="btn btn-secondary me-2">
+          Annuler
+        </a>
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-plus-circle me-1"></i> Ajouter
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

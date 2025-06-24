@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord - Intégration ERPNext</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-2xl font-bold text-gray-800">Tableau de bord</h1>
+        <p class="text-gray-600">Bienvenue, <span th:text="${username}" class="font-semibold"></span></p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Carte Module Ventes -->
+        <div class="bg-white rounded-lg shadow-md p-6 transform transition-transform duration-300 hover:scale-105">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Module Ventes</h2>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-gray-600">Total Clients</p>
+                    <p class="text-2xl font-bold text-gray-800" th:text="${stats.totalClients}">0</p>
+                </div>
+                <div>
+                    <p class="text-gray-600">Commandes en cours</p>
+                    <p class="text-2xl font-bold text-gray-800" th:text="${stats.commandesEnCours}">0</p>
+                </div>
+                <div>
+                    <p class="text-gray-600">Chiffre d'affaires</p>
+                    <p class="text-2xl font-bold text-gray-800" th:text="${#numbers.formatDecimal(stats.chiffreAffaires, 0, 'COMMA', 2, 'POINT')} + ' €'">0,00 €</p>
+                </div>
+            </div>
+            <div class="flex justify-between mt-6">
+                <a href="/ventes/clients" class="text-indigo-600 hover:text-indigo-800 font-medium">Clients</a>
+                <a href="/ventes/commandes" class="text-indigo-600 hover:text-indigo-800 font-medium">Commandes</a>
+            </div>
+        </div>
+
+        <!-- Carte Module Projets -->
+        <div class="bg-white rounded-lg shadow-md p-6 transform transition-transform duration-300 hover:scale-105">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Module Projets</h2>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-gray-600">Total Projets</p>
+                    <p class="text-2xl font-bold text-gray-800" th:text="${stats.totalProjets}">0</p>
+                </div>
+                <div>
+                    <p class="text-gray-600">Projets en cours</p>
+                    <p class="text-2xl font-bold text-gray-800" th:text="${stats.projetsEnCours}">0</p>
+                </div>
+            </div>
+            <div class="mt-6">
+                <a href="/projets" class="text-indigo-600 hover:text-indigo-800 font-medium">Voir les projets</a>
+            </div>
+        </div>
+
+        <!-- Carte Importation -->
+        <div class="bg-white rounded-lg shadow-md p-6 transform transition-transform duration-300 hover:scale-105">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Importation</h2>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                </svg>
+            </div>
+            <p class="text-gray-600 mb-4">Importez vos données depuis des fichiers CSV</p>
+            <a href="/import" class="text-indigo-600 hover:text-indigo-800 font-medium">Importer des données</a>
+        </div>
+
+        <!-- Carte Importation -->
+        <div class="bg-white rounded-lg shadow-md p-6 transform transition-transform duration-300 hover:scale-105">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Human resources</h2>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                </svg>
+            </div>
+            <p class="text-gray-600 mb-4">Liste des employés et les congés</p>
+            <a href="/employees" class="text-indigo-600 hover:text-indigo-800 font-medium">Liste</a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Graphique Activité Récente -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Activité Récente</h2>
+            <canvas id="activityChart" height="200"></canvas>
+        </div>
+
+        <!-- Dernières Mises à Jour -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Dernières Mises à Jour</h2>
+            <ul class="space-y-4">
+                <li class="border-b pb-2">
+                    <div class="flex justify-between">
+                        <span class="font-medium">Mise à jour système</span>
+                        <span class="text-sm text-gray-500">Aujourd'hui</span>
+                    </div>
+                    <p class="text-gray-600">L'API d'ERPNext a été mise à jour.</p>
+                </li>
+                <li class="border-b pb-2">
+                    <div class="flex justify-between">
+                        <span class="font-medium">Nouvelle fonctionnalité</span>
+                        <span class="text-sm text-gray-500">Hier</span>
+                    </div>
+                    <p class="text-gray-600">Importation des demandes de matériel et devis.</p>
+                </li>
+                <li>
+                    <div class="flex justify-between">
+                        <span class="font-medium">Améliorations</span>
+                        <span class="text-sm text-gray-500">3 jours</span>
+                    </div>
+                    <p class="text-gray-600">Interface utilisateur améliorée pour le module ventes.</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<script th:inline="javascript">
+    // Récupérer les données d'activité depuis le modèle Thymeleaf
+    const activityData = /*[[${stats.activityData}]]*/ [];
+
+    // Configuration du graphique d'activité
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    const activityChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: activityData.map(data => data.date),
+            datasets: [{
+                label: 'Commandes',
+                data: activityData.map(data => data.commandes),
+                borderColor: 'rgba(99, 102, 241, 1)',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Projets',
+                data: activityData.map(data => data.projets),
+                borderColor: 'rgba(16, 185, 129, 1)',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

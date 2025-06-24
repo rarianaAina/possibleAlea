@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Composants Salariaux - Intégration ERPNext</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div th:replace="fragments/header-rh :: header-rh"></div>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Composants Salariaux</h1>
+    <a href="/paie/composants/ajouter"
+       class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+      Nouveau Composant
+    </a>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="p-6">
+      <div class="mb-6">
+        <form class="flex gap-4">
+          <div class="flex-1">
+            <input type="text" placeholder="Rechercher un composant..."
+                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div>
+            <select class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="">Tous les types</option>
+              <option value="Earning">Gains</option>
+              <option value="Deduction">Déductions</option>
+            </select>
+          </div>
+          <button type="submit"
+                  class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+            Filtrer
+          </button>
+        </form>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+          <tr th:each="composant : ${composants}">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-gray-900" th:text="${composant.salaryComponent}"></div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                          th:classappend="${composant.type == 'Earning' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}"
+                                          th:text="${composant.type == 'Earning' ? 'Gain' : 'Déduction'}"></span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900" th:text="${composant.description}"></div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900" th:text="${composant.amount}"></div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                          th:classappend="${composant.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}"
+                                          th:text="${composant.isActive ? 'Actif' : 'Inactif'}"></span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <a th:href="@{/paie/composants/{id}(id=${composant.name})}"
+                 class="text-indigo-600 hover:text-indigo-900 mr-3">Détails</a>
+              <a th:href="@{/paie/composants/{id}/modifier(id=${composant.name})}"
+                 class="text-green-600 hover:text-green-900">Modifier</a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+<script th:replace="fragments/header-rh :: header-rh-script"></script>
+</body>
+</html>

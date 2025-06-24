@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modifier Composant Salarial - Intégration ERPNext</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div th:replace="fragments/header-rh :: header-rh"></div>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-3xl mx-auto">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">Modifier Composant Salarial</h1>
+      <p class="text-gray-600 mt-1" th:text="${composant.salaryComponent}"></p>
+    </div>
+
+    <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+      <span th:text="${error}"></span>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <form th:action="@{/paie/composants/{id}/modifier(id=${composant.name})}" method="post" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="salaryComponent" class="block text-sm font-medium text-gray-700">Nom du Composant *</label>
+            <input type="text" id="salaryComponent" name="salaryComponent" required
+                   th:value="${composant.salaryComponent}"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+          </div>
+
+          <div>
+            <label for="type" class="block text-sm font-medium text-gray-700">Type *</label>
+            <select id="type" name="type" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+              <option value="Earning" th:selected="${composant.type == 'Earning'}">Gain</option>
+              <option value="Deduction" th:selected="${composant.type == 'Deduction'}">Déduction</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+          <textarea id="description" name="description" rows="3"
+                    th:text="${composant.description}"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="amount" class="block text-sm font-medium text-gray-700">Montant par Défaut</label>
+            <input type="number" id="amount" name="amount" step="0.01" min="0"
+                   th:value="${composant.amount}"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+          </div>
+
+<!--          <div>
+            <label for="roundTo" class="block text-sm font-medium text-gray-700">Arrondir à</label>
+            <select id="roundTo" name="roundTo"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+              <option value="">Pas d'arrondi</option>
+              <option value="0.01" th:selected="${composant.roundTo != null and composant.roundTo.toString() == '0.01'}">0,01</option>
+              <option value="0.1" th:selected="${composant.roundTo != null and composant.roundTo.toString() == '0.1'}">0,1</option>
+              <option value="1" th:selected="${composant.roundTo != null and composant.roundTo.toString() == '1'}">1</option>
+              <option value="10" th:selected="${composant.roundTo != null and composant.roundTo.toString() == '10'}">10</option>
+              <option value="100" th:selected="${composant.roundTo != null and composant.roundTo.toString() == '100'}">100</option>
+            </select>
+          </div>-->
+        </div>
+
+        <div>
+          <label for="formula" class="block text-sm font-medium text-gray-700">Formule</label>
+          <input type="text" id="formula" name="formula"
+                 th:value="${composant.formula}"
+                 placeholder="Ex: BS * 0.1 (BS = Salaire de Base)"
+                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+          <p class="text-xs text-gray-500 mt-1">
+            Utilisez BS pour Salaire de Base, GP pour Salaire Brut.
+            Exemple: BS * 0.1 pour 10% du salaire de base
+          </p>
+        </div>
+
+        <div>
+          <label for="condition" class="block text-sm font-medium text-gray-700">Condition</label>
+          <input type="text" id="condition" name="condition"
+                 th:value="${composant.condition}"
+                 placeholder="Ex: BS > 1000"
+                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+          <p class="text-xs text-gray-500 mt-1">
+            Condition pour appliquer ce composant. Exemple: BS > 1000 pour appliquer seulement si le salaire de base > 1000
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <input type="checkbox" id="isActive" name="isActive"
+                   th:checked="${composant.isActive}"
+                   class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+            <label for="isActive" class="ml-2 text-sm text-gray-700">Composant Actif</label>
+          </div>
+
+<!--          <div class="flex items-center">
+            <input type="checkbox" id="doNotIncludeInTotal" name="doNotIncludeInTotal"
+                   th:checked="${composant.doNotIncludeInTotal}"
+                   class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+            <label for="doNotIncludeInTotal" class="ml-2 text-sm text-gray-700">Ne pas inclure dans le total</label>
+          </div>-->
+
+<!--          <div class="flex items-center">
+            <input type="checkbox" id="isFlexibleBenefit" name="isFlexibleBenefit"
+                   th:checked="${composant.isFlexibleBenefit}"
+                   class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+            <label for="isFlexibleBenefit" class="ml-2 text-sm text-gray-700">Avantage Flexible</label>
+          </div>-->
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <a th:href="@{/paie/composants/{id}(id=${composant.name})}"
+             class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            Annuler
+          </a>
+          <button type="submit"
+                  class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+            Enregistrer les Modifications
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+<script th:replace="fragments/header-rh :: header-rh-script"></script>
+</body>
+</html>

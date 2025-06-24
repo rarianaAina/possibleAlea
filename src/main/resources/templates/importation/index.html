@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Import de données - Gestion RH</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    .navbar-brand i {
+      font-size: 1.5rem;
+      color: #0d6efd;
+      margin-right: 0.5rem;
+    }
+    .import-container {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      padding: 2rem;
+    }
+    .upload-zone {
+      border: 2px dashed #dee2e6;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      text-align: center;
+      background-color: #f8f9fa;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1rem;
+    }
+    .upload-zone:hover {
+      border-color: #0d6efd;
+      background-color: #e9ecef;
+    }
+    .upload-icon {
+      font-size: 2rem;
+      color: #6c757d;
+      margin-bottom: 0.5rem;
+    }
+    .instructions {
+      background-color: #f8f9fa;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+    }
+  </style>
+</head>
+<body class="bg-light">
+<!-- Navigation reste inchangée -->
+
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="import-container">
+        <h2 class="mb-4">Import de données</h2>
+
+        <div th:if="${success}" class="alert alert-success" role="alert">
+          <i class="bi bi-check-circle me-2"></i>
+          <span th:text="${success}"></span>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+          <i class="bi bi-exclamation-circle me-2"></i>
+          <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/import/upload}" method="post" enctype="multipart/form-data">
+          <!-- Upload Employés -->
+          <div class="mb-4">
+            <h5>1. Fichier des employés</h5>
+            <div class="upload-zone" onclick="document.getElementById('employesFile').click();">
+              <i class="bi bi-person-vcard upload-icon"></i>
+              <p class="mb-1">Fichier CSV des employés</p>
+              <small class="text-muted">Cliquez pour sélectionner</small>
+              <input type="file" id="employesFile" name="employesFile" class="d-none"
+                     accept=".csv" onchange="updateFileName(this, 'employesFileName')">
+              <div id="employesFileName" class="mt-2 text-primary"></div>
+            </div>
+          </div>
+
+          <!-- Upload Structures -->
+          <div class="mb-4">
+            <h5>2. Fichier des structures salariales</h5>
+            <div class="upload-zone" onclick="document.getElementById('structuresFile').click();">
+              <i class="bi bi-diagram-3 upload-icon"></i>
+              <p class="mb-1">Fichier CSV des structures</p>
+              <small class="text-muted">Cliquez pour sélectionner</small>
+              <input type="file" id="structuresFile" name="structuresFile" class="d-none"
+                     accept=".csv" onchange="updateFileName(this, 'structuresFileName')">
+              <div id="structuresFileName" class="mt-2 text-primary"></div>
+            </div>
+          </div>
+
+          <!-- Upload Salaires -->
+          <div class="mb-4">
+            <h5>3. Fichier des salaires</h5>
+            <div class="upload-zone" onclick="document.getElementById('salairesFile').click();">
+              <i class="bi bi-cash-stack upload-icon"></i>
+              <p class="mb-1">Fichier CSV des salaires</p>
+              <small class="text-muted">Cliquez pour sélectionner</small>
+              <input type="file" id="salairesFile" name="salairesFile" class="d-none"
+                     accept=".csv" onchange="updateFileName(this, 'salairesFileName')">
+              <div id="salairesFileName" class="mt-2 text-primary"></div>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+              <i class="bi bi-upload me-2"></i>
+              Importer les données
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="instructions">
+        <h4 class="mb-4">Instructions d'import</h4>
+
+        <div class="mb-4">
+          <h5>1. Fichier des employés</h5>
+          <p class="small">Format CSV avec séparateur point-virgule (;)</p>
+          <ul class="small">
+            <li>Ref</li>
+            <li>Nom</li>
+            <li>Prenom</li>
+            <li>Genre</li>
+            <li>Date embauche (dd/mm/yyyy)</li>
+            <li>Date naissance (dd/mm/yyyy)</li>
+            <li>Company</li>
+          </ul>
+        </div>
+
+        <div class="mb-4">
+          <h5>2. Fichier des structures</h5>
+          <p class="small">Format CSV avec séparateur point-virgule (;)</p>
+          <ul class="small">
+            <li>Salary structure</li>
+            <li>Name</li>
+            <li>Abbr</li>
+            <li>Type</li>
+            <li>Valeur</li>
+            <li>Remarque</li>
+          </ul>
+        </div>
+
+        <div class="mb-4">
+          <h5>3. Fichier des salaires</h5>
+          <p class="small">Format CSV avec séparateur point-virgule (;)</p>
+          <ul class="small">
+            <li>Mois (mm/yyyy)</li>
+            <li>Ref Employe</li>
+            <li>Salaire Base</li>
+            <li>Salaire</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function updateFileName(input, elementId) {
+    const fileName = input.files[0]?.name;
+    document.getElementById(elementId).textContent = fileName || '';
+    checkFiles();
+  }
+
+  function checkFiles() {
+    const employesFile = document.getElementById('employesFile').files[0];
+    const structuresFile = document.getElementById('structuresFile').files[0];
+    const salairesFile = document.getElementById('salairesFile').files[0];
+
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = !(employesFile && structuresFile && salairesFile);
+  }
+
+  // Gestion du drag & drop pour chaque zone
+  document.querySelectorAll('.upload-zone').forEach(zone => {
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      zone.style.borderColor = '#0d6efd';
+      zone.style.backgroundColor = '#e9ecef';
+    });
+
+    zone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      zone.style.borderColor = '#dee2e6';
+      zone.style.backgroundColor = '#f8f9fa';
+    });
+
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      zone.style.borderColor = '#dee2e6';
+      zone.style.backgroundColor = '#f8f9fa';
+
+      const fileInput = zone.querySelector('input[type="file"]');
+      fileInput.files = e.dataTransfer.files;
+      updateFileName(fileInput, fileInput.id + 'Name');
+    });
+  });
+</script>
+</body>
+</html>

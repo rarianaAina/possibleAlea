@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .page {
+      width: 210mm;
+      padding: 20mm;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .header h1 {
+      font-size: 18px;
+      margin: 0;
+      padding: 0;
+    }
+    .header p {
+      font-size: 14px;
+      margin: 5px 0;
+      color: #666;
+    }
+    .info-section {
+      background-color: #f9f9f9;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+    .info-section h3 {
+      font-size: 14px;
+      margin: 0 0 10px 0;
+    }
+    .row {
+      display: flex;
+      margin-bottom: 5px;
+    }
+    .col {
+      flex: 1;
+    }
+    .label {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    .components-container {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    .components-section {
+      flex: 1;
+      padding-right: 10px;
+    }
+    .component-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .component-item:last-child {
+      border-bottom: none;
+    }
+    .component-item-row {
+      display: flex;
+      justify-content: space-between;
+    }
+    .total-row {
+      border-top: 2px solid #ddd;
+      padding-top: 10px;
+      font-weight: bold;
+    }
+    .earning {
+      color: #007b00;
+    }
+    .deduction {
+      color: #d32f2f;
+    }
+    .net-pay {
+      background-color: #f0f7ff;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: right;
+      margin-top: 20px;
+    }
+    .net-amount {
+      font-size: 16px;
+      font-weight: bold;
+      color: #007b00;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <h1>BULLETIN DE PAIE</h1>
+    <p th:text="${nomMois + ' ' + salaire.annee}"></p>
+  </div>
+
+  <div class="info-section">
+    <div class="row">
+      <div class="col">
+        <h3>Informations employé</h3>
+        <div>
+          <span class="label">Nom complet:</span>
+          <span th:text="${employe.first_name + ' ' + employe.name}"></span>
+        </div>
+        <div>
+          <span class="label">ID employé:</span>
+          <span th:text="${employe.name}"></span>
+        </div>
+        <div>
+          <span class="label">Poste:</span>
+          <span th:text="${employe.phone}"></span>
+        </div>
+        <div>
+          <span class="label">Département:</span>
+          <span th:text="${employe.date_of_joining}"></span>
+        </div>
+      </div>
+      <div class="col">
+        <h3>Informations paiement</h3>
+        <div>
+          <span class="label">Période:</span>
+          <span th:text="${nomMois + ' ' + salaire.annee}"></span>
+        </div>
+        <div>
+          <span class="label">Date de paiement:</span>
+          <span th:text="${salaire.datePaiement.format(dateFormatter)}"></span>
+        </div>
+        <div>
+          <span class="label">Référence:</span>
+          <span th:text="${salaire.id}"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="components-container">
+    <div class="components-section">
+      <h3>Rémunérations</h3>
+      <div class="component-list">
+        <div class="component-item" th:each="composante : ${salaire.composantes}" th:if="${composante.type == 'GAIN'}">
+          <div class="component-item-row">
+            <div>
+              <span th:text="${composante.nom}"></span>
+              <span th:if="${composante.description}" style="display: block; font-size: 10px; color: #666;" th:text="${composante.description}"></span>
+            </div>
+            <div class="earning" th:text="${#numbers.formatDecimal(composante.montant, 0, 'COMMA', 2, 'POINT') + ' €'}"></div>
+          </div>
+        </div>
+        <div class="component-item total-row">
+          <div class="component-item-row">
+            <div>Total Brut</div>
+            <div class="earning" th:text="${#numbers.formatDecimal(salaire.salaireBrut, 0, 'COMMA', 2, 'POINT') + ' €'}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="components-section">
+      <h3>Déductions</h3>
+      <div class="component-list">
+        <div class="component-item" th:each="composante : ${salaire.composantes}" th:if="${composante.type == 'DEDUCTION'}">
+          <div class="component-item-row">
+            <div>
+              <span th:text="${composante.nom}"></span>
+              <span th:if="${composante.description}" style="display: block; font-size: 10px; color: #666;" th:text="${composante.description}"></span>
+            </div>
+            <div class="deduction" th:text="${#numbers.formatDecimal(composante.montant, 0, 'COMMA', 2, 'POINT') + ' €'}"></div>
+          </div>
+        </div>
+        <div class="component-item total-row">
+          <div class="component-item-row">
+            <div>Total Déductions</div>
+            <div class="deduction" th:text="${#numbers.formatDecimal(salaire.salaireBrut - salaire.salaireNet, 0, 'COMMA', 2, 'POINT') + ' €'}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="net-pay">
+    <span>Salaire net: </span>
+    <span class="net-amount" th:text="${#numbers.formatDecimal(salaire.salaireNet, 0, 'COMMA', 2, 'POINT') + ' €'}"></span>
+  </div>
+</div>
+</body>
+</html>

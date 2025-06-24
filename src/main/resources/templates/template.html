@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - ERPNext</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .sidebar {
+      transition: width 0.3s;
+    }
+    .sidebar-collapsed {
+      width: 70px;
+    }
+    .sidebar-expanded {
+      width: 240px;
+    }
+    .active-menu {
+      background-color: #edf5ff;
+      border-left: 3px solid #2490ef;
+      color: #2490ef;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 h-screen overflow-hidden">
+<div class="flex h-full">
+
+    <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+      <div th:replace="${page}"></div>
+    </main>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script>
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const savedMenu = localStorage.getItem("activeMenu");
+    const menuItems = document.querySelectorAll("[data-menu]");
+
+    menuItems.forEach(item => {
+      item.classList.remove("active-menu");
+      if (item.getAttribute("data-menu") === savedMenu) {
+        item.classList.add("active-menu");
+      }
+    });
+
+
+    menuItems.forEach(item => {
+      item.addEventListener("click", function () {
+        localStorage.setItem("activeMenu", this.getAttribute("data-menu"));
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

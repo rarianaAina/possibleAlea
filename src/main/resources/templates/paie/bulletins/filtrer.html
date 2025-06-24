@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filtrer Bulletins de Paie - Intégration ERPNext</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">Filtrer les Bulletins de Paie</h1>
+      <p class="text-gray-600 mt-1">Recherchez des bulletins selon des critères spécifiques</p>
+    </div>
+
+    <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+      <span th:text="${error}"></span>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <form action="/paie/bulletins/filtrer" method="post" class="space-y-6">
+        <!-- Période -->
+        <div>
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Période</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="startDate" class="block text-sm font-medium text-gray-700">Date de Début</label>
+              <input type="date" id="startDate" name="startDate"
+                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+
+            <div>
+              <label for="endDate" class="block text-sm font-medium text-gray-700">Date de Fin</label>
+              <input type="date" id="endDate" name="endDate"
+                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+          </div>
+        </div>
+
+        <!-- Critères de filtrage -->
+        <div>
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Critères de Filtrage</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="salaryComponent" class="block text-sm font-medium text-gray-700">Composant Salarial</label>
+              <select id="salaryComponent" name="salaryComponent"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">Tous les composants</option>
+                <option th:each="composant : ${composants}"
+                        th:value="${composant.name}"
+                        th:text="${composant.salaryComponent}"></option>
+              </select>
+            </div>
+
+            <div>
+              <label for="employee" class="block text-sm font-medium text-gray-700">Employé</label>
+              <select id="employee" name="employee"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">Tous les employés</option>
+                <option th:each="employe : ${employes}"
+                        th:value="${employe.name}"
+                        th:text="${employe.first_name + ' (' + employe.lastName + ')'}"></option>
+              </select>
+            </div>
+
+            <div>
+              <label for="department" class="block text-sm font-medium text-gray-700">Département</label>
+              <select id="department" name="department"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">Tous les départements</option>
+                <option th:each="dept : ${departements}"
+                        th:value="${dept.name}"
+                        th:text="${dept.departmentName}"></option>
+              </select>
+            </div>
+
+            <div>
+              <label for="status" class="block text-sm font-medium text-gray-700">Statut</label>
+              <select id="status" name="status"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">Tous les statuts</option>
+                <option value="Draft">Brouillon</option>
+                <option value="Submitted">Soumis</option>
+                <option value="Paid">Payé</option>
+                <option value="Cancelled">Annulé</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-blue-700">
+                <strong>Astuce :</strong> Vous pouvez combiner plusieurs critères pour affiner votre recherche.
+                Par exemple, filtrer par période ET par composant salarial pour trouver tous les bulletins
+                contenant un composant spécifique sur une période donnée.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <a href="/paie/bulletins"
+             class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            Annuler
+          </a>
+          <button type="submit"
+                  class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+            Rechercher
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+<script th:replace="fragments/header :: header-script"></script>
+</body>
+</html>

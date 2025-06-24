@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <footer th:fragment="footer" class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">ERPNext Integration</h3>
+                    <p class="text-gray-400">Une interface utilisateur moderne pour ERPNext</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Liens Rapides</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/dashboard" class="text-gray-400 hover:text-white transition-colors">Tableau de bord</a></li>
+                        <li><a href="/ventes/clients" class="text-gray-400 hover:text-white transition-colors">Clients</a></li>
+                        <li><a href="/projets" class="text-gray-400 hover:text-white transition-colors">Projets</a></li>
+                        <li><a href="/import" class="text-gray-400 hover:text-white transition-colors">Importation</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Ressources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="https://docs.erpnext.com/" target="_blank" class="text-gray-400 hover:text-white transition-colors">Documentation ERPNext</a></li>
+                        <li><a href="https://discuss.erpnext.com/" target="_blank" class="text-gray-400 hover:text-white transition-colors">Forum ERPNext</a></li>
+                        <li><a href="https://github.com/frappe/erpnext" target="_blank" class="text-gray-400 hover:text-white transition-colors">GitHub ERPNext</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 ERPNext Integration. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
